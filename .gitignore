@@ -1,1 +1,2 @@
 /data/*
+!/data/training_sub.json

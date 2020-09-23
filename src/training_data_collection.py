@@ -45,14 +45,17 @@ def collect_training_episodes(root_dir, input_file):
     for (root, dirs, files) in os.walk(root_dir, topdown=True): 
         for file in files:
             if file in episodes:
-                training_episodes.append(root+file)
+                training_episodes.append(root+'/'+file)
     
     return training_episodes
 
 if __name__ == '__main__':
 
-    input_file = 'podcasts_2020_train.1-8.qrels.txt'
-    root_dir = 'podcasts-no-audio-13GB'
+    input_file = '../data/podcasts_2020_train.1-8.qrels.txt'
+    root_dir = '../data/podcasts-no-audio-13GB'
     training_episodes = collect_training_episodes(root_dir, input_file)
+
+    for episode in training_episodes:
+        print(episode)
 
 
