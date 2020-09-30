@@ -38,9 +38,10 @@ def collect_training_episodes(root_dir, input_file):
 
     with open(input_file) as f:
         for cnt, line in enumerate(f):
-            episode = line.split()[2].split(':')[-1].split('_')[0] + '.json'
-            if episode not in episodes:
-                    episodes.append(episode)
+            if not line.split()[-1] == '0': #remove non-relevant episodes
+                episode = line.split()[2].split(':')[-1].split('_')[0] + '.json'
+                if episode not in episodes:
+                        episodes.append(episode)
 
     for (root, dirs, files) in os.walk(root_dir, topdown=True): 
         for file in files:
@@ -55,7 +56,6 @@ if __name__ == '__main__':
     root_dir = '../data/podcasts-no-audio-13GB'
     training_episodes = collect_training_episodes(root_dir, input_file)
 
-    for episode in training_episodes:
-        print(episode)
+    print(len(training_episodes))
 
 
