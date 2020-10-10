@@ -38,7 +38,6 @@ if __name__ == '__main__':
     # print(targets)
     # prepare embedder
     embedder = SentenceTransformer('bert-base-nli-mean-tokens')    
-    top_k = 1
     
     '''
     final result looks smth like
@@ -58,33 +57,62 @@ if __name__ == '__main__':
         all_segment_embeddings[episode_id]=segment_embeddings
     
     best_segments = {}
-        
-# find best matching segments for all queries
+            
+    top_k = 5
+
+    # find best matching segments for all queries
     for topic_id in topics.keys():
+        best_segments[topic_id] = []
+        episode_result = {}
+
         topic_embedding = embedder.encode(topics[topic_id]['query'] + ' ' + topics[topic_id]['description'], convert_to_tensor=True)
-        rslt = float('-inf')
+        # for later index matching
+        episode_num = 0
+
         for episode_id in tqdm(data.keys()):
             # prepare segments texts and timespans
             segment_texts=[data[episode_id][i]["transcript"] for i in range(len(data[episode_id]))]
             segment_timespans=[(float(data[episode_id][i]["startTime"].split('s')[0]),float(data[episode_id][i]["endTime"].split('s')[0])) for i in range(len(data[episode_id]))]
             # prepare segment embeddings
-            #segment_embeddings=embedder.encode(segment_texts , convert_to_tensor=True)
+            # segment_embeddings=embedder.encode(segment_texts , convert_to_tensor=True)
             # return the index of best matching index
             cos_scores = util.pytorch_cos_sim(topic_embedding, all_segment_embeddings[episode_id])[0]
             cos_scores = cos_scores.cpu()
             best_segment_idx = np.argpartition(-cos_scores, range(top_k))[0:top_k]
-
-            if cos_scores[best_segment_idx] > rslt: 
-                rslt = cos_scores[best_segment_idx]
-                best_segments[topic_id] = {episode_id:segment_timespans[best_segment_idx]}
+            
+            # TODO: IF NEED TO EXTRACT TEXT ADD [segment_texts[idx] for idx in best_segment_idx] AS WELL
+            episode_result[episode_num]= (episode_id, cos_scores[best_segment_idx], [segment_timespans[idx] for idx in best_segment_idx])
+            episode_num += 1
+        
+        all_scores = []  
+        for episode_id in episode_result.keys():
+            all_scores.append(episode_result[episode_id][1])
+        
+        all_scores = torch.stack(all_scores).reshape(-1)
+        values, indices = torch.topk(all_scores, top_k, sorted=False, largest = True)
+        
+        for idx in indices:
+            idx = idx.item()
+            best_segments[topic_id].append({episode_result[idx // top_k][0]: episode_result[idx // top_k][2][idx % top_k]})
 
     # compute accuracy
-
     does_overlap = lambda a,b: max(0, min(a[1], b[1]) - max(a[0], b[0]))>0
     n_correct = 0
+
+    print(best_segments)
     for topic_id in best_segments.keys():
-        for episode_id in best_segments[topic_id].keys():
-            if any([does_overlap(best_segments[topic_id][episode_id], (target_timespan, target_timespan+120)) for target_timespan in targets[topic_id + '-' + episode_id]]):
-                n_correct+=1
-            # print(targets[topic_id + '-' + episode_id])
+        for i in range(len(best_segments[topic_id])):
+            n_correct_element = 0
+            for episode_id in best_segments[topic_id][i].keys():
+                if any([does_overlap(best_segments[topic_id][i][episode_id], (target_timespan, target_timespan+120)) for target_timespan in targets[topic_id + '-' + episode_id]]):
+                    n_correct_element+=1
+            
+            if n_correct_element >0:
+                n_correct += 1
+                print(topic_id)
+                break
+
     print('acc: ', n_correct/len(best_segments))
+
+    # TODO: Failed on topic 6, check
+    # TODO: Modulize code...
