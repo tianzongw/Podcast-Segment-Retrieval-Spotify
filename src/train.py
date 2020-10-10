@@ -59,7 +59,7 @@ if __name__ == '__main__':
     
     best_segments = {}
         
-    # find best matching segments for all queries
+# find best matching segments for all queries
     for topic_id in topics.keys():
         topic_embedding = embedder.encode(topics[topic_id]['query'] + ' ' + topics[topic_id]['description'], convert_to_tensor=True)
         rslt = float('-inf')
@@ -78,12 +78,13 @@ if __name__ == '__main__':
                 rslt = cos_scores[best_segment_idx]
                 best_segments[topic_id] = {episode_id:segment_timespans[best_segment_idx]}
 
-# compute accuracy
-    does_overlap=lambda a,b:max(0, min(a[1], b[1]) - max(a[0], b[0]))>0
+    # compute accuracy
+
+    does_overlap = lambda a,b: max(0, min(a[1], b[1]) - max(a[0], b[0]))>0
     n_correct = 0
     for topic_id in best_segments.keys():
         for episode_id in best_segments[topic_id].keys():
-            if any([does_overlap(best_segments[topic_id][episode_id], target_timespan) for target_timespan in targets[str(topic_id) + '-' + episode_id]]):
+            if any([does_overlap(best_segments[topic_id][episode_id], (target_timespan, target_timespan+120)) for target_timespan in targets[topic_id + '-' + episode_id]]):
                 n_correct+=1
-
+            # print(targets[topic_id + '-' + episode_id])
     print('acc: ', n_correct/len(best_segments))
