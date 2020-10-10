@@ -14,7 +14,7 @@ if __name__ == '__main__':
     path='../data/training_sub.json'
     with open(path,'r') as f:
         data=json.load(f)
-
+    print(len(data))
     # prepare topics 
     tree = ET.parse('../data/podcasts_2020_topics_train.xml')
     root = tree.getroot()
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     for line in temp_list:
         targets[line[0]+'-'+line[1]].append(float(line[2]))
 
-     
+    # print(targets)
     # prepare embedder
     embedder = SentenceTransformer('bert-base-nli-mean-tokens')    
     top_k = 1
@@ -49,6 +49,14 @@ if __name__ == '__main__':
         8: {episode_id: time_span_of_segment}
     }
     '''
+
+    all_segment_embeddings={}
+    for episode_id in tqdm(data.keys()):
+        # prepare segments texts and timespans
+        segment_texts=[data[episode_id][i]["transcript"] for i in range(len(data[episode_id]))]
+        segment_embeddings=embedder.encode(segment_texts , convert_to_tensor=True)
+        all_segment_embeddings[episode_id]=segment_embeddings
+    
     best_segments = {}
         
     # find best matching segments for all queries
@@ -60,9 +68,9 @@ if __name__ == '__main__':
             segment_texts=[data[episode_id][i]["transcript"] for i in range(len(data[episode_id]))]
             segment_timespans=[(float(data[episode_id][i]["startTime"].split('s')[0]),float(data[episode_id][i]["endTime"].split('s')[0])) for i in range(len(data[episode_id]))]
             # prepare segment embeddings
-            segment_embeddings=embedder.encode(segment_texts , convert_to_tensor=True)
+            #segment_embeddings=embedder.encode(segment_texts , convert_to_tensor=True)
             # return the index of best matching index
-            cos_scores = util.pytorch_cos_sim(topic_embedding, segment_embeddings)[0]
+            cos_scores = util.pytorch_cos_sim(topic_embedding, all_segment_embeddings[episode_id])[0]
             cos_scores = cos_scores.cpu()
             best_segment_idx = np.argpartition(-cos_scores, range(top_k))[0:top_k]
 
@@ -70,13 +78,12 @@ if __name__ == '__main__':
                 rslt = cos_scores[best_segment_idx]
                 best_segments[topic_id] = {episode_id:segment_timespans[best_segment_idx]}
 
-    # compute accuracy
+# compute accuracy
     does_overlap=lambda a,b:max(0, min(a[1], b[1]) - max(a[0], b[0]))>0
     n_correct = 0
     for topic_id in best_segments.keys():
         for episode_id in best_segments[topic_id].keys():
-            if any([does_overlap(best_segments[topic_id][episode_id], target_timespan) for target_timespan in targets[episode_id]]):
+            if any([does_overlap(best_segments[topic_id][episode_id], target_timespan) for target_timespan in targets[str(topic_id) + '-' + episode_id]]):
                 n_correct+=1
-    
-    print('acc: ', n_correct/len(best_segments))
 
+    print('acc: ', n_correct/len(best_segments))
