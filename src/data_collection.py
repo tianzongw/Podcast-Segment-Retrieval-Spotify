@@ -1,7 +1,13 @@
 import os
 import json
+import random
+
 # Dataset Structure
-'''
+"""
+total num of episodes     : 125642  (100%)
+labeled episodes          : 344     (0.3%)
+labeled relevant episodes : 100     (0.1%)    
+
 ├── podcasts-no-audio-13GB
 │   ├── 150gold.egfb.txt
 │   ├── 150gold.tsv
@@ -30,7 +36,7 @@ import json
 
                     ...
 
-'''
+"""
 def extract_segments(path):
     with open(path, "r") as read_file:
         episode = json.load(read_file)
@@ -57,32 +63,48 @@ def extract_segments(path):
 
     return segments
 
-def collect_training_episodes(root_dir, input_file):
+def collect_episodes(root_dir, input_file, ratio = 0, matching_level = [1,2,3,4]):
+    
+    """
+    collecting episodes as searching space at different noise_ratio and matching level
+
+    :param ratio            : percent of searching space among all episodes
+    :param matching_level   : relevant episodes at different matching level
+    :type a                 : float between 0-1, default 0
+    :type b                 : list of a combination of int from 1-4 
+    :return                 : list of episodes path 
+    :rtype                  : list 
+    """
+
     episodes = []
     training_episodes = []
-
+    
+    # collrct 100 relevant episodes
     with open(input_file) as f:
-        for cnt, line in enumerate(f):
-            if not line.split()[-1] == '0': #remove non-relevant episodes
+        for _, line in enumerate(f):
+            if int(line.split()[-1]) in matching_level: # filtering the level we want to match, 
                 episode = line.split()[2].split(':')[-1].split('_')[0] + '.json'
                 if episode not in episodes:
                         episodes.append(episode)
 
-    for (root, dirs, files) in os.walk(root_dir, topdown=True): 
+    for (root, _, files) in os.walk(root_dir, topdown=True): 
+
         for file in files:
-            if file in episodes:
-                training_episodes.append(root+'/'+file)
-    
+            if file in episodes or random.uniform(0, 1) <= ratio:
+                if 'xml' not in root+'/'+file:
+                    training_episodes.append(root+'/'+file)
+
     return training_episodes
 
 if __name__ == '__main__':
 
     input_file = '../data/podcasts_2020_train.1-8.qrels.txt'
     root_dir = '../data/podcasts-no-audio-13GB'
-    training_episodes = collect_training_episodes(root_dir, input_file)
+    training_episodes = collect_episodes(root_dir, input_file, ratio = 0.001)
     training_segments = {}
     for episode in training_episodes:
         episode_id=episode.split('/')[-1].split('.json')[0]
+        print(episode)
         training_segments[episode_id]=extract_segments(episode)
     with open('../data/training_sub.json', 'w') as fout:
             json.dump(training_segments , fout)
