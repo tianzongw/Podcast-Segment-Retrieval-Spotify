@@ -104,7 +104,6 @@ if __name__ == '__main__':
     training_segments = {}
     for episode in training_episodes:
         episode_id=episode.split('/')[-1].split('.json')[0]
-        print(episode)
         training_segments[episode_id]=extract_segments(episode)
     with open('../data/training_sub.json', 'w') as fout:
             json.dump(training_segments , fout)

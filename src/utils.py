@@ -137,6 +137,8 @@ def find_top_k_segments(topics, data, embedder = SentenceTransformer('roberta-la
             cos_scores = util.pytorch_cos_sim(
                 topic_embedding, all_segment_embeddings[episode_id])[0]
             cos_scores = cos_scores.cpu()
+            if len(all_segment_embeddings[episode_id]) < top_k:
+                continue
             best_segment_idx = np.argpartition(-cos_scores,
                                                range(top_k))[0:top_k]
 
