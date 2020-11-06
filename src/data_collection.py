@@ -1,6 +1,14 @@
 import os
 import json
 import random
+import argparse
+import pandas as pd
+
+parser = argparse.ArgumentParser(description='args for data collection')
+
+parser.add_argument('--r', '--noise_ratio', default=0.0001, type=float, help='noise ratio for training experiments')
+parser.add_argument('--mode',  default='train')
+args = parser.parse_args()
 
 # Dataset Structure
 """
@@ -63,7 +71,7 @@ def extract_segments(path):
 
     return segments
 
-def collect_episodes(root_dir, input_file, ratio = 0, matching_level = [1,2,3,4]):
+def collect_episodes(root_dir, labeled_file, ratio = 0, matching_level = [1,2,3,4]):
     
     """
     collecting episodes as searching space at different noise_ratio and matching level
@@ -80,7 +88,7 @@ def collect_episodes(root_dir, input_file, ratio = 0, matching_level = [1,2,3,4]
     training_episodes = []
     
     # collrct 100 relevant episodes
-    with open(input_file) as f:
+    with open(labeled_file) as f:
         for _, line in enumerate(f):
             if int(line.split()[-1]) in matching_level: # filtering the level we want to match, 
                 episode = line.split()[2].split(':')[-1].split('_')[0] + '.json'
@@ -98,14 +106,35 @@ def collect_episodes(root_dir, input_file, ratio = 0, matching_level = [1,2,3,4]
 
 if __name__ == '__main__':
 
-    input_file = '../data/podcasts_2020_train.1-8.qrels.txt'
-    root_dir = '../data/podcasts-no-audio-13GB'
-    training_episodes = collect_episodes(root_dir, input_file, ratio = 0.001)
-    training_segments = {}
-    for episode in training_episodes:
-        episode_id=episode.split('/')[-1].split('.json')[0]
-        training_segments[episode_id]=extract_segments(episode)
-    with open('../data/training_sub.json', 'w') as fout:
-            json.dump(training_segments , fout)
+    if args.mode == 'train':
+        labeled_file = '../data/podcasts_2020_train.1-8.qrels.txt'
+        root_dir = '../data/podcasts-no-audio-13GB'
+        training_episodes = collect_episodes(root_dir, labeled_file, ratio = args.r)
+        training_segments = {}
+        for episode in training_episodes:
+            episode_id=episode.split('/')[-1].split('.json')[0]
+            training_segments[episode_id]=extract_segments(episode)
+        with open('../data/training_sub.json', 'w') as fout:
+                json.dump(training_segments , fout)
+
+    if args.mode == 'test':
+        input_file = '../data/10k_testset.csv'
+        root_dir = '../data/podcasts-no-audio-13GB'
+
+        episodes = pd.read_csv(input_file)['episode_uri'].to_list()
+
+        test_segments = {}
+        count = 0
+        for (root, _, files) in os.walk(root_dir, topdown=True): 
+
+            for file in files:
+                if file.split('.')[0] in episodes:
+                    test_segments[file.split('.')[0]] = extract_segments(root+'/'+file)
+        
+
+        with open('../data/testing.json', 'w') as fout:
+            json.dump(test_segments , fout)
+
+
 
 
