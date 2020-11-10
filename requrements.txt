@@ -3,3 +3,6 @@ nltk
 scikit-learn
 gensim
 xmltodict
+pandas
+numpy 
+json
