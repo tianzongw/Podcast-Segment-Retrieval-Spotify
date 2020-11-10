@@ -38,7 +38,7 @@ def main(args):
 
         print("Topic {} {}: {}".format(ti, topic_dict['query'], topic_dict['description']))
         top_episodes = get_topic_episodes(topics, ti, tf_idf, ix2episode, n_episodes=60)
-        i2episode = [t for t in top_episodes]
+        i2episode = [t for t in top_episodes for sd in episodes[t]['segments']]
         i2segnum = [sd['segNum'] for t in top_episodes for sd in episodes[t]['segments']]
         i2transcript = [sd['transcript'] for t in top_episodes for sd in episodes[t]['segments']]
         i2transcript_clean = [sd['transcript_clean'] for t in top_episodes for sd in episodes[t]['segments']]
@@ -50,7 +50,7 @@ def main(args):
         tokenized_query = tokenize(topic_dict['query'])
         tokenized_query.extend(tokenize(clean_text(topic_dict['description'])))
         choices = model.get_top_n(tokenized_query, ix, 10)
-
+        print(choices)
         top10 = get_segment_details(choices, i2segnum, i2episode, i2transcript)
 
         for k, res in top10.items():

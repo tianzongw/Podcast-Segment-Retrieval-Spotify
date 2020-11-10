@@ -178,7 +178,7 @@ def get_segment_details(choices, i2segnum, i2episode, i2transcript):
         result["spotify:episode:{}_{}.0".format(i2episode[i], 30 * i2segnum[i])] = {
             "episode": i2episode[i],
             "start": 30 * i2segnum[i],
-            "end": 30 * i2segnum[i] + 120,
+            "end": 30 * i2segnum[i] + 60,
             "interval": (30 * i2segnum[i], 30 * i2segnum[i] + 120),
             "transcript": i2transcript[i],
             "rank": ix
