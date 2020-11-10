@@ -18,10 +18,10 @@ from src.utils_stats import *
 
 
 def main(args):
-    wd = args[0]
-    os.chdir(wd)
+    # wd = args[0]
+    # os.chdir(wd)
 
-    with open(args[1], "r") as f:
+    with open(args[0], "r") as f:
         files = f.readlines()
 
     files = [f.replace("\n", "") for f in files]
@@ -32,7 +32,7 @@ def main(args):
         episodes[os.path.splitext(filename)[0]] = extract_segments(filename)
 
     tf_idf, ix2episode, full_texts = get_tf_idf(episodes)
-    topics = extract_topics(args[2])
+    topics = extract_topics(args[1])
 
     for ti, topic_dict in topics.items():
 
