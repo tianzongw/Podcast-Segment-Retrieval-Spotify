@@ -32,7 +32,7 @@ def main(args):
         episodes[os.path.splitext(filename)[0]] = extract_segments(filename)
 
     tf_idf, ix2episode, full_texts = get_tf_idf(episodes)
-    topics = extract_topics("./data/podcasts_2020_topics_test.xml")
+    topics = extract_topics(args[2])
 
     for ti, topic_dict in topics.items():
 
@@ -59,5 +59,5 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = sys.argv()
+    args = sys.argv
     main(args[1::])

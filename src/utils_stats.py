@@ -39,11 +39,15 @@ def extract_segments(path):
             seg_result["endTime"] = segment_dict["words"][-1]["endTime"]
             # add transcript of this segment
             tr = segment_dict["transcript"]
-            seg_result["transcript_clean"] = clean_text(tr)
+            clean_tr = clean_text(tr)
+            seg_result["transcript_clean"] = clean_tr
             seg_result["transcript"] = tr
             segment_transcripts.append(tr)
             clean_segment_transcripts.append(seg_result["transcript_clean"])
             segments.append(seg_result)
+            if iter > 0:
+                segments[iter-1]['transcript'] = segments[iter-1]['transcript'] + " " + tr
+                segments[iter-1]['transcript_clean'] = segments[iter-1]['transcript_clean'] + " " + clean_tr
             iter += 1
 
     return {'segments': segments, "full_text": "".join(segment_transcripts),
