@@ -50,7 +50,6 @@ def main(args):
         tokenized_query = tokenize(topic_dict['query'])
         tokenized_query.extend(tokenize(clean_text(topic_dict['description'])))
         choices = model.get_top_n(tokenized_query, ix, 10)
-        print(choices)
         top10 = get_segment_details(choices, i2segnum, i2episode, i2transcript)
 
         for k, res in top10.items():
