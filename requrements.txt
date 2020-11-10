@@ -5,4 +5,3 @@ gensim
 xmltodict
 pandas
 numpy 
-json
