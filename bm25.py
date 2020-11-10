@@ -31,14 +31,14 @@ def main(args):
     for filename in files:
         episodes[os.path.splitext(filename)[0]] = extract_segments(filename)
 
-    tf_idf, ix2episode, full_texts = get_tf_idf(episodes)
+    tf_idf, ix2episode, full_texts = get_tf_idf(episodes, 1)
     topics = extract_topics(args[1])
 
     for ti, topic_dict in topics.items():
 
         print("Topic {} {}: {}".format(ti, topic_dict['query'], topic_dict['description']))
-        top_episodes = get_topic_episodes(topics, ti, tf_idf, ix2episode)
-        i2episode = [t for t in top_episodes for sd in episodes[t]['segments']]
+        top_episodes = get_topic_episodes(topics, ti, tf_idf, ix2episode, n_episodes=60)
+        i2episode = [t for t in top_episodes]
         i2segnum = [sd['segNum'] for t in top_episodes for sd in episodes[t]['segments']]
         i2transcript = [sd['transcript'] for t in top_episodes for sd in episodes[t]['segments']]
         i2transcript_clean = [sd['transcript_clean'] for t in top_episodes for sd in episodes[t]['segments']]
