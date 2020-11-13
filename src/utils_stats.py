@@ -4,6 +4,8 @@ import json
 import re
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
+from gensim.models import TfidfModel
+from gensim.corpora import Dictionary
 from gensim.parsing.preprocessing import remove_stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
@@ -111,14 +113,6 @@ def extract_topics(filename):
 
 def get_topic_episodes(topics, ix, tf_idf, ix2episode, n_episodes=10):
     topic = topics[ix]["description_clean"]
-    # tokens = [x for x in topic.split(" ") if x not in ["", " "]]
-    #
-    # bigrams = []
-    # for gram in nltk.ngrams(tokens, 2):
-    #     bigrams.append(" ".join(gram))
-    #
-    # tokens.extend(bigrams)
-
     tokens = tokenize(topic)
 
     score = np.zeros((tf_idf.shape[0]))
@@ -153,6 +147,34 @@ def get_tf_idf(training, n=2):
         columns=vectorizer.get_feature_names()
     )
     return tf_idf_df, ix2episode, full_texts
+
+
+def get_tf_idf_gensim(training, n=2):
+    ix2episode = list(training.keys())
+    full_texts_clean = [tokenize(training[k]['full_text_clean'], n=n) for k in ix2episode]
+    full_texts = [training[k]['full_text'] for k in ix2episode]
+
+    dct = Dictionary(full_texts_clean)  # fit dictionary
+    corpus = [dct.doc2bow(line) for line in full_texts_clean]
+    tf_idf = TfidfModel(corpus)
+
+    return tf_idf, dct, corpus, ix2episode, full_texts
+
+
+def get_topic_episodes_gensim(topics, ix, tf_idf, dct, corpus, ix2episode, n=2, n_episodes=10):
+    topic_dict = topics[ix]
+    tokenized_query = tokenize(topic_dict['query'], n)
+    tokenized_query.extend(tokenize(clean_text(topic_dict['description']), n))
+    # sum([x[1] for x in model[dct.doc2bow(tokenized_query)]])
+    N = len(corpus)
+    tokens = dct.doc2idx(tokenized_query)
+    score = np.zeros(N)
+    for doc in range(N):
+        doc_scores = [x[1] for x in tf_idf[corpus[doc]] if x[0] in tokens]
+        score[doc] = sum(doc_scores)
+    ixs = np.argsort(-score)[0:n_episodes]
+    top_episodes = [ix2episode[i] for i in ixs]
+    return top_episodes
 
 
 def compare_with_qrels(results, qrels, topic):
