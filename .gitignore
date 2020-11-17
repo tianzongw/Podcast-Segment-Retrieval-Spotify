@@ -1,2 +1,3 @@
 /data/*
-!/data/training_sub.json
+!data/podcasts_2020_topics_train.xml
+!data/podcasts_2020_train.1-8.qrels.txt

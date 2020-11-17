@@ -3,6 +3,12 @@ import json
 from utils import extract_topics, extract_targets, embed_episodes, find_top_k_segments, compute_acc
 from sentence_transformers import SentenceTransformer
 
+import os, ssl
+if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
+    ssl._create_default_https_context = ssl._create_unverified_context
+
+
+
 if __name__ == '__main__':
 
 
@@ -20,11 +26,11 @@ if __name__ == '__main__':
     topics = extract_topics(topic_file)
 
     # prepare targets
-    targets = extract_targets(target_file)
+    # targets = extract_targets(target_file)
 
     # find best matching segments for all queries
     best_segments = find_top_k_segments(topics, data, embedder, top_k)
-    
+    print(best_segments)
     # print accuracy
-    compute_acc(best_segments, targets)
+    # compute_acc(best_segments, targets)
 

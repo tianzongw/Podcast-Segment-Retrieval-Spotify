@@ -160,7 +160,7 @@ def find_top_k_segments(topics, data, embedder = SentenceTransformer('roberta-la
             best_segments[topic_id].append(
                 {episode_result[idx // top_k][0]: episode_result[idx // top_k][2][idx % top_k]})
         
-        return best_segments
+    return best_segments
 
 def does_overlap(a, b): 
     return max(0, min(a[1], b[1]) - max(a[0], b[0])) > 0
