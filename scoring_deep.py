@@ -8,10 +8,9 @@ from src.utils_stats import *
 import pickle
 
 
-def main(args):
-
-    with open(args[3], 'r') as f:
-        pickle.load(f)
+def main(args):=
+    with open(args[3], 'rb') as f:
+        dl_segs_dict = pickle.load(f)
 
     n_gram = 2
     n_episodes = 20
@@ -21,7 +20,7 @@ def main(args):
         files = f.readlines()
 
     output_file = args[2]
-    results_df = pd.DataFrame(index=np.arnage(0, 9))
+    results_df = pd.DataFrame(index=np.arange(0, 9))
 
     files = [f.replace("\n", "") for f in files]
     episodes = {}
@@ -72,7 +71,7 @@ def main(args):
 
         model = bm25.BM25Okapi(i2tokens)
         scores = model.get_scores(tokenized_query)[-10:-1]
-        choice_scores = [scores[x] for x in choices]
+#        choice_scores = [scores[x] for x in choices]
         results_df = pd.concat([results_df, pd.DataFrame.from_dict({"topic_{}_dl".format(ti): scores})],
                                axis=1)
 
@@ -83,7 +82,7 @@ def main(args):
         # print(" ")
 
     # results_df.to_csv(output_file, index=False)
-    with open(output_file, "w") as f:
+    with open(output_file, "wb") as f:
         pickle.dump(results_df, f)
 
 
