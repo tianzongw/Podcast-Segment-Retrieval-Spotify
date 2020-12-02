@@ -8,7 +8,7 @@ from src.utils_stats import *
 import pickle
 
 
-def main(args):=
+def main(args):
     with open(args[3], 'rb') as f:
         dl_segs_dict = pickle.load(f)
 
@@ -70,7 +70,7 @@ def main(args):=
         i2tokens = [tokenize(x) for x in i2transcript_clean]
 
         model = bm25.BM25Okapi(i2tokens)
-        scores = model.get_scores(tokenized_query)[-11:-1]
+        scores = model.get_scores(tokenized_query)[-10:0]
 #        choice_scores = [scores[x] for x in choices]
         results_df = pd.concat([results_df, pd.DataFrame.from_dict({"topic_{}_dl".format(ti): scores})],
                                axis=1)
