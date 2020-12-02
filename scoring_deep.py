@@ -70,8 +70,11 @@ def main(args):
         i2tokens = [tokenize(x) for x in i2transcript_clean]
 
         model = bm25.BM25Okapi(i2tokens)
-        scores = model.get_scores(tokenized_query)[-10:0]
-#        choice_scores = [scores[x] for x in choices]
+        scores = model.get_scores(tokenized_query)
+        l = len(scores)
+        scores = scores[(l-10):l]
+        print(scores)
+
         results_df = pd.concat([results_df, pd.DataFrame.from_dict({"topic_{}_dl".format(ti): scores})],
                                axis=1)
 
