@@ -10,7 +10,7 @@ import pickle
 
 def main(args):
 
-    with open(args[0], 'r') as f:
+    with open(args[3], 'r') as f:
         pickle.load(f)
 
     n_gram = 2
