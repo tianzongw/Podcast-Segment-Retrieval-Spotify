@@ -112,9 +112,15 @@ if __name__ == '__main__':
         training_episodes = collect_episodes(root_dir, labeled_file, ratio = args.r)
         training_segments = {}
         for episode in training_episodes:
-            episode_id=episode.split('/')[-1].split('.json')[0]
-            training_segments[episode_id]=extract_segments(episode)
-        with open('../data/training_sub.json', 'w') as fout:
+            try:
+                episode_id=episode.split('/')[-1].split('.json')[0]
+                training_segments[episode_id]=extract_segments(episode)
+            
+            except Exception:
+                pass
+            
+        n_episodes = int(args.r * 100000)
+        with open('../data/training_sub' + '_' + str(n_episodes) + '.json', 'w') as fout:
                 json.dump(training_segments , fout)
 
     if args.mode == 'test':

@@ -26,11 +26,11 @@ if __name__ == '__main__':
     topics = extract_topics(topic_file)
 
     # prepare targets
-    # targets = extract_targets(target_file)
+    targets = extract_targets(target_file)
 
     # find best matching segments for all queries
     best_segments = find_top_k_segments(topics, data, embedder, top_k)
-    print(best_segments)
+    # print(best_segments)
     # print accuracy
-    # compute_acc(best_segments, targets)
+    compute_acc(best_segments, targets)
 
