@@ -11,26 +11,40 @@ if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unveri
 
 if __name__ == '__main__':
 
-
-    datafile = '../data/training_sub.json'
     topic_file = '../data/podcasts_2020_topics_train.xml'
     target_file = '../data/podcasts_2020_train.1-8.qrels.txt'
-    embedder = SentenceTransformer('roberta-large-nli-stsb-mean-tokens')
-    top_k = 5
+    embedder = SentenceTransformer('bert-base-nli-mean-tokens')
+    # embedder = SentenceTransformer('bert-large-nli-mean-tokens')
+    # embedder = SentenceTransformer('roberta-base-nli-mean-tokens')
+    # embedder = SentenceTransformer('roberta-large-nli-stsb-mean-tokens')
 
-    # prepare training subset
-    with open(datafile, 'r') as f:
-        data = json.load(f)
+    # top_k = 1
+    top_k = [1,3,5]
+    n_samples = [200,500,1000,2000] #TODO: 5,000 in sleep
+    
+    for n in n_samples:
+        for k in top_k:
+            datafile = '../data/training_sub_' + str(n) + '.json'
+            datafile = '../data/training_sub_' + str(n) + '.json'
+            datafile = '../data/training_sub_' + str(n) + '.json'
 
-    # prepare topics
-    topics = extract_topics(topic_file)
+            
 
-    # prepare targets
-    targets = extract_targets(target_file)
+            # prepare training subset
+            with open(datafile, 'r') as f:
+                data = json.load(f)
 
-    # find best matching segments for all queries
-    best_segments = find_top_k_segments(topics, data, embedder, top_k)
-    # print(best_segments)
-    # print accuracy
-    compute_acc(best_segments, targets)
+            # prepare topics
+            topics = extract_topics(topic_file)
+
+            # prepare targets
+            targets = extract_targets(target_file)
+
+            # find best matching segments for all queries
+            best_segments = find_top_k_segments(topics, data, embedder, k)
+            # print(best_segments)
+            # print accuracy
+            acc = compute_acc(best_segments, targets)
+
+            print('n_samples:', n , 'top_k:', k, 'acc:', acc )
 

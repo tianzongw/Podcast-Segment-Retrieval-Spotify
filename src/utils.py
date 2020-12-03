@@ -181,12 +181,15 @@ def compute_acc(best_segments, targets):
         for i in range(len(best_segments[topic_id])):
             n_correct_element = 0
             for episode_id in best_segments[topic_id][i].keys():
-                if any([does_overlap(best_segments[topic_id][i][episode_id], (target_timespan, target_timespan+120)) for target_timespan in targets[topic_id + '-' + episode_id]]):
+                if any([does_overlap(best_segments[topic_id][i][episode_id], (target_timespan, target_timespan+60)) for target_timespan in targets[topic_id + '-' + episode_id]]):
                     n_correct_element += 1
 
             if n_correct_element > 0:
                 n_correct += 1
-                print(topic_id)
                 break
 
-    print('acc: ', n_correct/len(best_segments))
+
+    return n_correct/len(best_segments)
+
+
+

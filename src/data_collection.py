@@ -109,7 +109,7 @@ if __name__ == '__main__':
     if args.mode == 'train':
         labeled_file = '../data/podcasts_2020_train.1-8.qrels.txt'
         root_dir = '../data/podcasts-no-audio-13GB'
-        training_episodes = collect_episodes(root_dir, labeled_file, ratio = args.r)
+        training_episodes = collect_episodes(root_dir, labeled_file, ratio = args.r, matching_level = [2,3,4])
         training_segments = {}
         for episode in training_episodes:
             try:
@@ -120,7 +120,7 @@ if __name__ == '__main__':
                 pass
             
         n_episodes = int(args.r * 100000)
-        with open('../data/training_sub' + '_' + str(n_episodes) + '.json', 'w') as fout:
+        with open('../data/training_sub' + '_' + str(n_episodes) +'_good' + '.json', 'w') as fout:
                 json.dump(training_segments , fout)
 
     if args.mode == 'test':
