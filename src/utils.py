@@ -98,7 +98,7 @@ def embed_episodes(data, embedder):
 
     return all_segment_embeddings
 
-def find_top_k_segments(topics, data, embedder = SentenceTransformer('roberta-large-nli-stsb-mean-tokens'), top_k = 5):
+def find_top_k_segments(topics, data, embedder, top_k):
     """
     retrive the index of the top_k most similar segments for each topic
  
