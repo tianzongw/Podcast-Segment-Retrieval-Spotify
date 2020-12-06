@@ -3,3 +3,5 @@
 !data/podcasts_2020_train.1-8.qrels.txt
 .DS_Store
 !data/podcasts_2020_topics_test.xml
+*.ipynb_checkpoints
+
