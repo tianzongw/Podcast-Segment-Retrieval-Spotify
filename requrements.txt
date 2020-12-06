@@ -5,3 +5,13 @@ gensim
 xmltodict
 pandas
 numpy 
+
+# deep learning method
+torch
+sentence-transformers
+tqdm
+json
+xmltodict
+argparse
+os
+random

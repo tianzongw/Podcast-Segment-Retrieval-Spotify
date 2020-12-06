@@ -1,0 +1,27 @@
+Model Name,Base Model,Pooling,Training Data,STSb Performance (Higher = Better),Speed (Sent. / Sec on V100 GPU),Comments
+roberta-large-nli-stsb-mean-tokens,roberta-large,Mean Pooling,NLI+STSb,"86,39",830,
+roberta-base-nli-stsb-mean-tokens,roberta-base,Mean Pooling,NLI+STSb,"85,44",2300,
+bert-large-nli-stsb-mean-tokens,bert-large-uncased,Mean Pooling,NLI+STSb,"85,29",830,
+distilbert-base-nli-stsb-mean-tokens,distilbert-base-uncased,Mean Pooling,NLI+STSb,"85,16",4000,
+bert-base-nli-stsb-mean-tokens,bert-base-uncased,Mean Pooling,NLI+STSb,"85,14",2300,
+bert-base-nli-stsb-wkpooling,bert-base-uncased,WKPooling,NLI+STSb,"84,26",30,Note: WKPooling can only be run on CPU
+distilbert-base-nli-stsb-wkpooling,distilbert-base-uncased,WKPooling,NLI+STSb,"83,96",90,Note: WKPooling can only be run on CPU
+xlm-r-paraphrase-v1.,XLM-R,Mean Pooling,Paraphrase Data,"83,50",2300,
+distilroberta-base-paraphrase-v1,distilroberta-base,Mean Pooling,Paraphrase Data,"81,81",4000,
+distilbert-base-nli-wkpooling,distilbert-base-uncased,WKPooling,NLI,"79,43",90,Note: WKPooling can only be run on CPU
+bert-large-nli-mean-tokens,bert-large-uncased,Mean Pooling,NLI,"79,19",830,
+roberta-base-nli-wkpooling,roberta-base,WKPooling,NLI,"78,81",30,Note: WKPooling can only be run on CPU
+distilbert-base-nli-mean-tokens,distilbert-base-uncased,Mean Pooling,NLI,"78,69",4000,
+roberta-large-nli-mean-tokens,roberta-large,Mean Pooling,NLI,"78,69",830,
+bert-large-nli-max-tokens,bert-large-uncased,Max Pooling,NLI,"78,41",830,
+bert-base-nli-wkpooling,bert-base-uncased,WKPooling,NLI,"78,38",30,Note: WKPooling can only be run on CPU
+bert-large-nli-cls-token,bert-large-uncased,CLS Token,NLI,"78,29",830,
+distilbert-base-nli-max-tokens,distilbert-base-uncased,Max Pooling,NLI,"77,61",4000,
+roberta-base-nli-mean-tokens,roberta-base,Mean Pooling,NLI,"77,49",2300,
+bert-base-nli-max-tokens,bert-base-uncased,Max Pooling,NLI,"77,21",2300,
+bert-base-nli-mean-tokens,bert-base-uncased,Mean Pooling,NLI,"77,12",2300,
+bert-base-nli-cls-token,bert-base-uncased,CLS Token,NLI,"76,3",2300,
+average_word_embeddings_glove.6B.300d,Word Embeddings: GloVe,Mean Pooling,-,"61,77",34000,"Average word embeddings with GloVe (6B, 300 dimension). Without stop-words"
+average_word_embeddings_komninos,Word Embeddings: Komninos et al.,Mean Pooling,-,"61,56",22000,Average word embeddings with Komninos et al. embeddings (300 dimension). Without stop-words
+average_word_embeddings_levy_dependency,Word Embeddings: Levy et al.,Mean Pooling,-,"59,22",22000,Average word embeddings with Levy et al. dependency tree based embeddings (300 dimension). Without stop-words
+average_word_embeddings_glove.840B.300d,Word Embeddings: GloVe,Mean Pooling,,"52,54",34000,"Average word embeddings with GloVe (840B, 300 dimension). Without stop-words"
